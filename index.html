@@ -251,10 +251,32 @@
       flex-wrap: wrap;
     }
 
+    .soft-box-header-main {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+      flex: 1 1 220px;
+    }
+
     .soft-box-title {
       font-size: 14px;
       font-weight: 700;
       color: #0f172a;
+    }
+
+    .soft-box-summary {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .soft-box-body {
+      display: grid;
+      gap: 14px;
+    }
+
+    .soft-box-body.is-collapsed {
+      display: none;
     }
 
     .toggle-row {
@@ -391,9 +413,10 @@
     .preview-wrap {
       border: 1px solid #e2e8f0;
       border-radius: 18px;
-      overflow: hidden;
+      overflow: auto;
       background: #f8fafc;
       padding: 12px;
+      max-height: calc(100vh - 180px);
     }
 
     .preview-stage {
@@ -401,6 +424,12 @@
       overflow: hidden;
       position: relative;
       min-height: 320px;
+    }
+
+    .sticky-preview-panel {
+      position: sticky;
+      top: 20px;
+      align-self: start;
     }
 
     .preview-frame {
@@ -416,7 +445,7 @@
 
     .code-box {
       width: 100%;
-      height: 1250px;
+      height: min(1250px, calc(100vh - 220px));
       border: 1px solid #cbd5e1;
       border-radius: 18px;
       background: #020617;
@@ -483,6 +512,14 @@
       .info-grid { grid-template-columns: 1fr; }
       .preview-stage,
       .code-box { min-height: 900px; }
+
+      .preview-wrap {
+        max-height: none;
+      }
+
+      .sticky-preview-panel {
+        position: static;
+      }
     }
   </style>
 </head>
@@ -627,7 +664,10 @@
     const state = {
       data: JSON.parse(JSON.stringify(sampleData)),
       activeTab: "preview",
-      validationMode: true
+      validationMode: true,
+      ui: {
+        collapsedLeftSections: {}
+      }
     };
 
     function escapeHtml(value = "") {
@@ -737,17 +777,17 @@
     function renderEventsSection(section) {
       const cards = section.events.map((event) => {
         const imageMarkup = hasValue(event.imageUrl)
-          ? `<tr><td style="padding:0;">${renderImageTag(event.imageUrl, event.imageAlt)}</td></tr>`
+          ? `<div style="padding-top:14px;padding-bottom:14px;">${renderImageTag(event.imageUrl, event.imageAlt)}</div>`
           : "";
 
         return `
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:18px;border:1px solid ${palette.border};background:#ffffff;">
-            ${imageMarkup}
             <tr>
               <td style="padding:18px 18px 16px 18px;">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="background:${palette.bluePale};color:${palette.navy};font-family:Arial, sans-serif;font-size:11px;font-weight:700;letter-spacing:0.3px;line-height:11px;padding:7px 10px;text-transform:uppercase;">${escapeHtml(event.category)}</td></tr></table>
                 <div style="padding-top:14px;font-family:Arial, sans-serif;font-size:14px;font-weight:700;line-height:22px;color:#516f95;">${escapeHtml(joinMeta(event))}</div>
-                <div style="padding-top:8px;font-family:Arial, sans-serif;font-size:22px;line-height:32px;font-weight:700;color:${palette.navy};">${nlToBreaks(event.title)}</div>
+                ${imageMarkup}
+                <div style="font-family:Arial, sans-serif;font-size:22px;line-height:32px;font-weight:700;color:${palette.navy};">${nlToBreaks(event.title)}</div>
                 <div style="padding-top:10px;padding-bottom:16px;font-family:Arial, sans-serif;font-size:16px;line-height:29px;color:${palette.text};">${nlToBreaks(event.text)}</div>
                 ${renderBulletproofButton(event.buttonLabel, event.buttonUrl)}
               </td>
@@ -769,13 +809,12 @@
         ? `<ul style="margin:18px 0 0 0;padding-left:22px;color:${palette.text};font-family:Arial, sans-serif;font-size:16px;line-height:30px;">${section.bullets.filter(Boolean).map((bullet) => `<li style="margin-bottom:4px;">${nlToBreaks(bullet)}</li>`).join("")}</ul>`
         : "";
       const imageMarkup = hasValue(section.imageUrl)
-        ? `<tr><td style="padding:0;">${renderImageTag(section.imageUrl, section.imageAlt)}</td></tr>`
+        ? `<div style="padding-bottom:16px;">${renderImageTag(section.imageUrl, section.imageAlt)}</div>`
         : "";
       return `
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:22px;border:1px solid ${palette.border};background:#ffffff;">
           <tr><td style="padding:0;"><div style="height:4px;background:${palette.blue};font-size:0;line-height:0;">&nbsp;</div></td></tr>
-          ${imageMarkup}
-          <tr><td style="padding:22px;"><div style="font-family:Arial, sans-serif;font-size:28px;line-height:38px;font-weight:700;color:${palette.navy};margin:0 0 16px 0;">${escapeHtml(section.title)}</div>${paragraphs}${bullets}</td></tr>
+          <tr><td style="padding:22px;"><div style="font-family:Arial, sans-serif;font-size:28px;line-height:38px;font-weight:700;color:${palette.navy};margin:0 0 16px 0;">${escapeHtml(section.title)}</div>${imageMarkup}${paragraphs}${bullets}</td></tr>
         </table>
       `;
     }
@@ -938,6 +977,20 @@
       return JSON.parse(JSON.stringify(obj));
     }
 
+    function getLeftSectionSummary(section) {
+      if (section.type === "events") {
+        const count = Array.isArray(section.events) ? section.events.length : 0;
+        return `${count} ${count === 1 ? "Beitrag" : "Beiträge"}`;
+      }
+
+      const paragraphCount = (section.paragraphs || []).filter((item) => hasValue(item)).length;
+      const bulletCount = (section.bullets || []).filter((item) => hasValue(item)).length;
+      const parts = [];
+      if (paragraphCount) parts.push(`${paragraphCount} ${paragraphCount === 1 ? "Absatz" : "Absätze"}`);
+      if (bulletCount) parts.push(`${bulletCount} ${bulletCount === 1 ? "Punkt" : "Punkte"}`);
+      return parts.length ? parts.join(" · ") : "Noch ohne Inhalt";
+    }
+
     function datasetKeyToAttribute(key) {
       return `data-${key.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)}`;
     }
@@ -1059,6 +1112,7 @@
     }
 
     function renderLeftSectionEditor(section, index) {
+      const isCollapsed = !!state.ui.collapsedLeftSections[section.id];
       const typeSwitcher = `
         <label class="field" style="max-width:190px;">
           <span>Typ</span>
@@ -1071,11 +1125,16 @@
 
       const header = `
         <div class="soft-box-header">
-          <div>
+          <div class="soft-box-header-main">
             <div class="soft-box-title">Block ${index + 1}</div>
             <div class="hint">${section.type === "events" ? "Terminsektion" : "Textblock"}</div>
+            <div class="soft-box-summary">${escapeHtml(section.title || "Ohne Überschrift")} · ${escapeHtml(getLeftSectionSummary(section))}</div>
           </div>
-          <div class="btn-row">${typeSwitcher}<button class="btn danger small" data-action="remove-left-section" data-index="${index}">Entfernen</button></div>
+          <div class="btn-row">
+            ${typeSwitcher}
+            <button class="btn ghost small" data-action="toggle-left-collapse" data-section-id="${section.id}">${isCollapsed ? "Aufklappen" : "Einklappen"}</button>
+            <button class="btn danger small" data-action="remove-left-section" data-index="${index}">Entfernen</button>
+          </div>
         </div>
       `;
 
@@ -1102,7 +1161,7 @@
             </div>
             <div class="field-grid">
               ${renderField("Button-Link", `<input class="input" value="${escapeHtml(event.buttonUrl || "")}" data-action="set-event-field" data-section-index="${index}" data-event-index="${eventIndex}" data-field="buttonUrl">`, "Pflichtfeld")}
-              ${renderField("Bild-URL", `<input class="input" value="${escapeHtml(event.imageUrl || "")}" data-action="set-event-field" data-section-index="${index}" data-event-index="${eventIndex}" data-field="imageUrl">`, "Optional. Öffentliche Direkt-URL zu PNG, JPG oder WebP.")}
+              ${renderField("Bild-URL", `<input class="input" value="${escapeHtml(event.imageUrl || "")}" data-action="set-event-field" data-section-index="${index}" data-event-index="${eventIndex}" data-field="imageUrl">`, "Optional. Öffentliche Direkt-URL zu PNG, JPG oder WebP.")} 
             </div>
             <div class="field-grid one">
               ${renderField("Bild-Alt-Text", `<input class="input" value="${escapeHtml(event.imageAlt || "")}" data-action="set-event-field" data-section-index="${index}" data-event-index="${eventIndex}" data-field="imageAlt">`, "Optional, aber empfohlen für Bildblocker und Barrierefreiheit.")}
@@ -1111,7 +1170,16 @@
           </div>
         `).join("");
 
-        return `<div class="soft-box">${header}${titleField}${events}<button class="btn secondary small" data-action="add-event" data-index="${index}">Beitrag hinzufügen</button></div>`;
+        return `
+          <div class="soft-box">
+            ${header}
+            <div class="soft-box-body ${isCollapsed ? "is-collapsed" : ""}">
+              ${titleField}
+              ${events}
+              <button class="btn secondary small" data-action="add-event" data-index="${index}">Beitrag hinzufügen</button>
+            </div>
+          </div>
+        `;
       }
 
       const paragraphsValue = (section.paragraphs || []).join("\n\n");
@@ -1119,13 +1187,15 @@
       return `
         <div class="soft-box">
           ${header}
-          ${titleField}
-          <div class="field-grid">
-            ${renderField("Bild-URL", `<input class="input" value="${escapeHtml(section.imageUrl || "")}" data-action="set-left-image" data-index="${index}" data-field="imageUrl">`, "Optional. Öffentliche Direkt-URL zu PNG, JPG oder WebP.")}
-            ${renderField("Bild-Alt-Text", `<input class="input" value="${escapeHtml(section.imageAlt || "")}" data-action="set-left-image" data-index="${index}" data-field="imageAlt">`, "Optional, aber empfohlen.")}
+          <div class="soft-box-body ${isCollapsed ? "is-collapsed" : ""}">
+            ${titleField}
+            <div class="field-grid">
+              ${renderField("Bild-URL", `<input class="input" value="${escapeHtml(section.imageUrl || "")}" data-action="set-left-image" data-index="${index}" data-field="imageUrl">`, "Optional. Öffentliche Direkt-URL zu PNG, JPG oder WebP.")}
+              ${renderField("Bild-Alt-Text", `<input class="input" value="${escapeHtml(section.imageAlt || "")}" data-action="set-left-image" data-index="${index}" data-field="imageAlt">`, "Optional, aber empfohlen.")}
+            </div>
+            ${renderField("Absätze", `<textarea class="textarea" rows="7" data-action="set-text-paragraphs" data-index="${index}">${escapeHtml(paragraphsValue)}</textarea>`, "Mindestens ein Absatz erforderlich. Absätze bitte durch eine Leerzeile trennen.")}
+            ${renderField("Aufzählung", `<textarea class="textarea" rows="4" data-action="set-text-bullets" data-index="${index}">${escapeHtml(bulletsValue)}</textarea>`, "Optional. Eine Zeile pro Aufzählungspunkt.")}
           </div>
-          ${renderField("Absätze", `<textarea class="textarea" rows="7" data-action="set-text-paragraphs" data-index="${index}">${escapeHtml(paragraphsValue)}</textarea>`, "Mindestens ein Absatz erforderlich. Absätze bitte durch eine Leerzeile trennen.")}
-          ${renderField("Aufzählung", `<textarea class="textarea" rows="4" data-action="set-text-bullets" data-index="${index}">${escapeHtml(bulletsValue)}</textarea>`, "Optional. Eine Zeile pro Aufzählungspunkt.")}
         </div>
       `;
     }
@@ -1232,7 +1302,7 @@
 
         <div class="layout" style="margin-top:20px;">
           <div class="stack">
-            <section class="panel">
+            <section class="panel sticky-preview-panel">
               <div class="panel-head"><div><h3>Allgemein</h3><p>Header, Einleitung und optionaler Hinweisbereich.</p></div></div>
               <div class="panel-body">
                 ${renderField("Preheader", `<textarea class="textarea" rows="2" data-action="set-general" data-field="preheader">${escapeHtml(state.data.general.preheader)}</textarea>`, "Pflichtfeld")}
@@ -1261,6 +1331,8 @@
                 <div class="btn-row">
                   <button class="btn secondary small" data-action="add-left-events">Terminsektion</button>
                   <button class="btn secondary small" data-action="add-left-text">Textblock</button>
+                  <button class="btn ghost small" data-action="expand-all-left">Alle auf</button>
+                  <button class="btn ghost small" data-action="collapse-all-left">Alle zu</button>
                 </div>
               </div>
               <div class="panel-body">${state.data.leftSections.map(renderLeftSectionEditor).join("")}</div>
@@ -1356,6 +1428,7 @@
           break;
         case "load-sample":
           state.data = deepClone(sampleData);
+          state.ui.collapsedLeftSections = {};
           break;
         case "toggle-notice":
           state.data.general.showNotice = !state.data.general.showNotice;
@@ -1380,9 +1453,21 @@
         case "add-left-text":
           state.data.leftSections.push({ id: createId(), type: "text", title: "Neuer Textblock", imageUrl: "", imageAlt: "", paragraphs: [""], bullets: [] });
           break;
-        case "remove-left-section":
-          state.data.leftSections.splice(Number(el.dataset.index), 1);
+        case "expand-all-left":
+          state.ui.collapsedLeftSections = {};
           break;
+        case "collapse-all-left":
+          state.ui.collapsedLeftSections = Object.fromEntries((state.data.leftSections || []).map((section) => [section.id, true]));
+          break;
+        case "toggle-left-collapse":
+          state.ui.collapsedLeftSections[el.dataset.sectionId] = !state.ui.collapsedLeftSections[el.dataset.sectionId];
+          break;
+        case "remove-left-section": {
+          const index = Number(el.dataset.index);
+          const [removedSection] = state.data.leftSections.splice(index, 1);
+          if (removedSection && removedSection.id) delete state.ui.collapsedLeftSections[removedSection.id];
+          break;
+        }
         case "set-left-title":
           state.data.leftSections[Number(el.dataset.index)].title = value;
           break;
@@ -1392,6 +1477,7 @@
           state.data.leftSections[index] = el.value === "events"
             ? { id: section.id, type: "events", title: section.title || "Kommende Termine", events: [{ id: createId(), category: "EVENT", date: "", time: "", location: "", title: "", text: "", imageUrl: "", imageAlt: "", buttonLabel: "Mehr erfahren", buttonUrl: "" }] }
             : { id: section.id, type: "text", title: section.title || "Neuer Textblock", imageUrl: "", imageAlt: "", paragraphs: [""], bullets: [] };
+          state.ui.collapsedLeftSections[section.id] = false;
           break;
         }
         case "add-event":
@@ -1498,6 +1584,7 @@
       reader.onload = () => {
         try {
           state.data = JSON.parse(reader.result);
+          state.ui.collapsedLeftSections = {};
           renderApp();
           alert("JSON-Datei wurde geladen.");
         } catch (error) {
