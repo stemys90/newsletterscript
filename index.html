@@ -661,19 +661,27 @@
       }
     };
 
+    function createInitialCollapsedPanels() {
+      return {
+        general: true,
+        lead: true,
+        leftSections: true,
+        sidebar: true,
+        footer: true
+      };
+    }
+
+    function createCollapsedLeftSections(data = state?.data || sampleData) {
+      return Object.fromEntries(((data && data.leftSections) || []).map((section) => [section.id, true]));
+    }
+
     const state = {
       data: JSON.parse(JSON.stringify(sampleData)),
       activeTab: "preview",
       validationMode: true,
       ui: {
-        collapsedLeftSections: {},
-        collapsedPanels: {
-          general: false,
-          lead: false,
-          leftSections: false,
-          sidebar: false,
-          footer: false
-        }
+        collapsedLeftSections: createCollapsedLeftSections(sampleData),
+        collapsedPanels: createInitialCollapsedPanels()
       }
     };
 
@@ -1456,7 +1464,8 @@
           break;
         case "load-sample":
           state.data = deepClone(sampleData);
-          state.ui.collapsedLeftSections = {};
+          state.ui.collapsedLeftSections = createCollapsedLeftSections(state.data);
+          state.ui.collapsedPanels = createInitialCollapsedPanels();
           break;
         case "toggle-notice":
           state.data.general.showNotice = !state.data.general.showNotice;
@@ -1612,7 +1621,8 @@
       reader.onload = () => {
         try {
           state.data = JSON.parse(reader.result);
-          state.ui.collapsedLeftSections = {};
+          state.ui.collapsedLeftSections = createCollapsedLeftSections(state.data);
+          state.ui.collapsedPanels = createInitialCollapsedPanels();
           renderApp();
           alert("JSON-Datei wurde geladen.");
         } catch (error) {
