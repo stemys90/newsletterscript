@@ -666,7 +666,14 @@
       activeTab: "preview",
       validationMode: true,
       ui: {
-        collapsedLeftSections: {}
+        collapsedLeftSections: {},
+        collapsedPanels: {
+          general: false,
+          lead: false,
+          leftSections: false,
+          sidebar: false,
+          footer: false
+        }
       }
     };
 
@@ -975,6 +982,14 @@
 
     function deepClone(obj) {
       return JSON.parse(JSON.stringify(obj));
+    }
+
+    function isPanelCollapsed(panelId) {
+      return !!state.ui.collapsedPanels?.[panelId];
+    }
+
+    function renderPanelCollapseButton(panelId) {
+      return `<button class="btn ghost small" data-action="toggle-panel-collapse" data-panel-id="${panelId}">${isPanelCollapsed(panelId) ? "Aufklappen" : "Einklappen"}</button>`;
     }
 
     function getLeftSectionSummary(section) {
@@ -1302,9 +1317,12 @@
 
         <div class="layout" style="margin-top:20px;">
           <div class="stack">
-            <section class="panel sticky-preview-panel">
-              <div class="panel-head"><div><h3>Allgemein</h3><p>Header, Einleitung und optionaler Hinweisbereich.</p></div></div>
-              <div class="panel-body">
+            <section class="panel">
+              <div class="panel-head">
+                <div><h3>Allgemein</h3><p>Header, Einleitung und optionaler Hinweisbereich.</p></div>
+                <div class="btn-row">${renderPanelCollapseButton("general")}</div>
+              </div>
+              ${!isPanelCollapsed("general") ? `<div class="panel-body">
                 ${renderField("Preheader", `<textarea class="textarea" rows="2" data-action="set-general" data-field="preheader">${escapeHtml(state.data.general.preheader)}</textarea>`, "Pflichtfeld")}
                 ${renderField("Hauptüberschrift", `<textarea class="textarea" rows="3" data-action="set-general" data-field="headline">${escapeHtml(state.data.general.headline)}</textarea>`, "Pflichtfeld")}
                 ${renderField("Einleitungstext", `<textarea class="textarea" rows="4" data-action="set-general" data-field="intro">${escapeHtml(state.data.general.intro)}</textarea>`, "Pflichtfeld")}
@@ -1314,15 +1332,18 @@
                 </div>
                 <div class="toggle-row"><div class="toggle-label"><strong>Bereich „Aktuell“ anzeigen</strong><span>Optionaler gelber Hinweisblock oberhalb der Spalten.</span></div><button class="switch ${state.data.general.showNotice ? "on" : ""}" data-action="toggle-notice"></button></div>
                 ${state.data.general.showNotice ? `${renderField("Label", `<input class="input" value="${escapeHtml(state.data.general.noticeLabel)}" data-action="set-general" data-field="noticeLabel">`, "Pflichtfeld")}${renderField("Hinweistext", `<textarea class="textarea" rows="4" data-action="set-general" data-field="noticeText">${escapeHtml(state.data.general.noticeText)}</textarea>`, "Pflichtfeld")}` : ""}
-              </div>
+              </div>` : ""}
             </section>
 
             <section class="panel">
-              <div class="panel-head"><div><h3>Begrüßungsblock links</h3><p>Erster großer Inhaltblock in der linken Spalte.</p></div></div>
-              <div class="panel-body">
+              <div class="panel-head">
+                <div><h3>Begrüßungsblock links</h3><p>Erster großer Inhaltblock in der linken Spalte.</p></div>
+                <div class="btn-row">${renderPanelCollapseButton("lead")}</div>
+              </div>
+              ${!isPanelCollapsed("lead") ? `<div class="panel-body">
                 ${renderField("Überschrift", `<textarea class="textarea" rows="3" data-action="set-lead-title">${escapeHtml(state.data.leadPanel.title)}</textarea>`, "Pflichtfeld")}
                 ${renderField("Absätze", `<textarea class="textarea" rows="8" data-action="set-lead-paragraphs">${escapeHtml(state.data.leadPanel.paragraphs.join("\n\n"))}</textarea>`, "Mindestens ein Absatz erforderlich. Absätze bitte durch eine Leerzeile trennen.")}
-              </div>
+              </div>` : ""}
             </section>
 
             <section class="panel">
@@ -1333,31 +1354,35 @@
                   <button class="btn secondary small" data-action="add-left-text">Textblock</button>
                   <button class="btn ghost small" data-action="expand-all-left">Alle auf</button>
                   <button class="btn ghost small" data-action="collapse-all-left">Alle zu</button>
+                  ${renderPanelCollapseButton("leftSections")}
                 </div>
               </div>
-              <div class="panel-body">${state.data.leftSections.map(renderLeftSectionEditor).join("")}</div>
+              ${!isPanelCollapsed("leftSections") ? `<div class="panel-body">${state.data.leftSections.map(renderLeftSectionEditor).join("")}</div>` : ""}
             </section>
 
             <section class="panel">
               <div class="panel-head">
                 <div><h3>Rechte Spalte</h3><p>Linkboxen, Infoboxen und Kontaktblöcke.</p></div>
-                <div class="btn-row"><button class="btn secondary small" data-action="add-sidebar">Box hinzufügen</button></div>
+                <div class="btn-row"><button class="btn secondary small" data-action="add-sidebar">Box hinzufügen</button>${renderPanelCollapseButton("sidebar")}</div>
               </div>
-              <div class="panel-body">${state.data.sidebarBlocks.map(renderSidebarBlockEditor).join("")}</div>
+              ${!isPanelCollapsed("sidebar") ? `<div class="panel-body">${state.data.sidebarBlocks.map(renderSidebarBlockEditor).join("")}</div>` : ""}
             </section>
 
             <section class="panel">
-              <div class="panel-head"><div><h3>Footer</h3><p>Absender- und Rechtstext.</p></div></div>
-              <div class="panel-body">
+              <div class="panel-head">
+                <div><h3>Footer</h3><p>Absender- und Rechtstext.</p></div>
+                <div class="btn-row">${renderPanelCollapseButton("footer")}</div>
+              </div>
+              ${!isPanelCollapsed("footer") ? `<div class="panel-body">
                 ${renderField("Footer-Titel", `<input class="input" value="${escapeHtml(state.data.footer.title)}" data-action="set-footer" data-field="title">`, "Pflichtfeld")}
                 ${renderField("Footer-Zeilen", `<textarea class="textarea" rows="4" data-action="set-footer-lines">${escapeHtml(state.data.footer.lines.join("\n"))}</textarea>`, "Mindestens eine Zeile erforderlich. Eine Zeile pro Information.")}
                 ${renderField("Rechtstext", `<textarea class="textarea" rows="5" data-action="set-footer" data-field="legal">${escapeHtml(state.data.footer.legal)}</textarea>`, "Pflichtfeld")}
-              </div>
+              </div>` : ""}
             </section>
           </div>
 
           <div class="stack">
-            <section class="panel">
+            <section class="panel sticky-preview-panel">
               <div class="panel-head">
                 <div class="preview-toolbar" style="width:100%;">
                   <div class="tabs">
@@ -1425,6 +1450,9 @@
       switch (action) {
         case "toggle-validation":
           state.validationMode = !state.validationMode;
+          break;
+        case "toggle-panel-collapse":
+          state.ui.collapsedPanels[el.dataset.panelId] = !state.ui.collapsedPanels[el.dataset.panelId];
           break;
         case "load-sample":
           state.data = deepClone(sampleData);
