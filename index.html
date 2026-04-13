@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newsletter Generator | GitHub Pages Ready</title>
+  <style>
+    :root {
+      --navy: #0b4a8f;
+      --navy-dark: #083d7a;
+      --blue: #0f61b8;
+      --blue-pale: #edf5fb;
+      --yellow: #f5e8a9;
+      --yellow-border: #e0bf2f;
+      --yellow-label: #f3b700;
+      --yellow-text: #735200;
+      --border: #c7d8ea;
+      --text: #123c78;
+      --page: #eef3f7;
+      --danger: #b91c1c;
+      --danger-bg: #fef2f2;
+      --warn: #92400e;
+      --warn-bg: #fffbeb;
+      --ok: #166534;
+      --ok-bg: #f0fdf4;
+      --shadow: 0 12px 30px rgba(15, 35, 65, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #0f172a;
+      background: #f1f5f9;
+    }
+
+    button, input, textarea, select {
+      font: inherit;
+    }
+
+    .app {
+      max-width: 1460px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .hero {
+      background: #0f172a;
+      color: #fff;
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .hero-top {
+      display: flex;
+      gap: 16px;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #cbd5e1;
+      font-weight: 700;
+    }
+
+    .hero h1 {
+      margin: 10px 0 10px;
+      font-size: 38px;
+      line-height: 1.15;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 900px;
+      color: #cbd5e1;
+      line-height: 1.7;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 1px solid transparent;
+      border-radius: 14px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: 0.18s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #111827;
+      color: #fff;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn.secondary {
+      background: #fff;
+      color: #334155;
+      border-color: #cbd5e1;
+    }
+    .btn.ghost {
+      background: transparent;
+      color: #334155;
+      border-color: #cbd5e1;
+    }
+    .btn.danger {
+      background: #fff;
+      color: var(--danger);
+      border-color: #fecaca;
+    }
+    .btn.small {
+      padding: 8px 12px;
+      font-size: 13px;
+      border-radius: 12px;
+    }
+    .btn[disabled] {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 540px minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 18px 20px;
+      border-bottom: 1px solid #edf2f7;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .panel-head h2,
+    .panel-head h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #0f172a;
+    }
+
+    .panel-head p {
+      margin: 6px 0 0;
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .panel-body {
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .field-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .field-grid.one {
+      grid-template-columns: 1fr;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .input,
+    .textarea,
+    .select {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      background: #fff;
+      padding: 12px 14px;
+      color: #0f172a;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .input:focus,
+    .textarea:focus,
+    .select:focus {
+      border-color: #64748b;
+      box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.18);
+    }
+
+    .textarea {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    .soft-box {
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      border-radius: 18px;
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .soft-box-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .soft-box-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+    }
+
+    .toggle-label strong {
+      display: block;
+      font-size: 14px;
+      color: #0f172a;
+    }
+
+    .toggle-label span {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .switch {
+      position: relative;
+      width: 52px;
+      height: 30px;
+      border: 0;
+      border-radius: 999px;
+      cursor: pointer;
+      background: #cbd5e1;
+    }
+
+    .switch::after {
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform 0.18s ease;
+    }
+
+    .switch.on {
+      background: #111827;
+    }
+
+    .switch.on::after {
+      transform: translateX(22px);
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .status-card {
+      border-radius: 18px;
+      padding: 16px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .status-card small {
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .status-card strong {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .status-card p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .status-neutral { background: #f8fafc; color: #334155; }
+    .status-danger { background: var(--danger-bg); color: var(--danger); }
+    .status-warn { background: var(--warn-bg); color: var(--warn); }
+
+    .alert {
+      border-radius: 18px;
+      padding: 16px;
+      font-size: 14px;
+      line-height: 1.7;
+      border: 1px solid transparent;
+    }
+
+    .alert strong { display: block; margin-bottom: 8px; }
+    .alert ul { margin: 0; padding-left: 18px; }
+    .alert li + li { margin-top: 6px; }
+    .alert.ok { background: var(--ok-bg); color: var(--ok); border-color: #bbf7d0; }
+    .alert.error { background: var(--danger-bg); color: var(--danger); border-color: #fecaca; }
+    .alert.warn { background: var(--warn-bg); color: var(--warn); border-color: #fde68a; }
+
+    .preview-toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      border: 0;
+      border-radius: 14px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+      background: transparent;
+      color: #475569;
+    }
+
+    .tab.active {
+      background: #111827;
+      color: #fff;
+    }
+
+    .preview-wrap {
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #f8fafc;
+      padding: 12px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 1250px;
+      border: 0;
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .code-box {
+      width: 100%;
+      height: 1250px;
+      border: 1px solid #cbd5e1;
+      border-radius: 18px;
+      background: #020617;
+      color: #e2e8f0;
+      padding: 16px;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .info-card {
+      background: #f8fafc;
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .info-card strong {
+      display: block;
+      color: #0f172a;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .info-card p {
+      margin: 0;
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .repo-box {
+      background: var(--ok-bg);
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      border-radius: 18px;
+      padding: 18px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .repo-box strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #14532d;
+    }
+
+    @media (max-width: 1200px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .app { padding: 12px; }
+      .hero { padding: 20px; border-radius: 22px; }
+      .hero h1 { font-size: 30px; }
+      .field-grid,
+      .status-grid,
+      .info-grid { grid-template-columns: 1fr; }
+      iframe,
+      .code-box { height: 900px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app"></div>
+
+  <script>
+    const palette = {
+      navy: "#0b4a8f",
+      navyDark: "#083d7a",
+      blue: "#0f61b8",
+      bluePale: "#edf5fb",
+      yellow: "#f5e8a9",
+      yellowBorder: "#e0bf2f",
+      yellowLabel: "#f3b700",
+      yellowText: "#735200",
+      border: "#c7d8ea",
+      text: "#123c78",
+      page: "#eef3f7"
+    };
+
+    function createId() {
+      if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+      return "id-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10);
+    }
+
+    const sampleData = {
+      general: {
+        preheader: "ALUMNI-NEWSLETTER | FAKULTÄT SOZIALE ARBEIT | OSTFALIA HOCHSCHULE FÜR ANGEWANDTE WISSENSCHAFTEN",
+        headline: "Verbunden bleiben. Impulse teilen. Zukunft mitgestalten.",
+        intro: "Neuigkeiten, Veranstaltungen und Beteiligungsmöglichkeiten für Absolventinnen und Absolventen der Fakultät Soziale Arbeit an der Ostfalia Hochschule für angewandte Wissenschaften.",
+        showNotice: true,
+        noticeLabel: "AKTUELL",
+        noticeText: "Für unser Alumni-Format im Wintersemester suchen wir Absolventinnen und Absolventen, die über ihren Berufseinstieg, Praxisfelder oder digitale Entwicklungen in der Sozialen Arbeit berichten möchten."
+      },
+      leadPanel: {
+        title: "Liebe Alumni der Fakultät Soziale Arbeit,",
+        paragraphs: [
+          "viele von Ihnen gestalten heute Soziale Arbeit in ganz unterschiedlichen Handlungsfeldern: in Beratung, Bildung, Kinder- und Jugendhilfe, Gesundheitswesen, Verwaltung, Sozialmanagement oder freien Projekten. Mit diesem Newsletter möchten wir den Kontakt zur Fakultät lebendig halten und Ihnen regelmäßig Einblicke, Termine und Mitwirkungsmöglichkeiten geben.",
+          "Gleichzeitig möchten wir die Alumni-Arbeit stärker als Netzwerk verstehen: als Raum für fachlichen Austausch, für Praxisimpulse und für Begegnungen zwischen ehemaligen und aktuellen Studierenden."
+        ]
+      },
+      leftSections: [
+        {
+          id: createId(),
+          type: "events",
+          title: "Kommende Termine",
+          events: [
+            {
+              id: createId(),
+              category: "FACHGESPRÄCH",
+              date: "14. Mai 2026",
+              time: "18:00-19:30 Uhr",
+              location: "Online",
+              title: "Soziale Arbeit im digitalen Wandel",
+              text: "Ein kompakter Abend mit Impulsen aus Praxis und Hochschule: Wie verändern KI, digitale Tools und neue Kommunikationsformen den Berufsalltag?",
+              buttonLabel: "Zur Anmeldung",
+              buttonUrl: "https://www.ostfalia.de/"
+            },
+            {
+              id: createId(),
+              category: "ALUMNI TRIFFT STUDIUM",
+              date: "11. Juni 2026",
+              time: "17:00-19:00 Uhr",
+              location: "Wolfenbüttel",
+              title: "Erfahrungen aus dem Berufseinstieg",
+              text: "Absolventinnen und Absolventen berichten über ihren Start in verschiedene Praxisfelder und geben Einblicke, die für aktuelle Studierende besonders wertvoll sind.",
+              buttonLabel: "Mehr erfahren",
+              buttonUrl: "https://www.ostfalia.de/"
+            }
+          ]
+        },
+        {
+          id: createId(),
+          type: "text",
+          title: "Mitwirkung erwünscht",
+          paragraphs: [
+            "Für neue Alumni-Formate suchen wir Absolventinnen und Absolventen, die sich mit einem kurzen Beitrag, einem Praxisimpuls oder als Gesprächsgast einbringen möchten.",
+            "Wenn Sie Interesse haben, freuen wir uns über Ihre Nachricht. Auch kurze Beiträge oder Ideen für zukünftige Alumni-Formate sind willkommen."
+          ],
+          bullets: [
+            "Berichte aus unterschiedlichen Berufsfeldern der Sozialen Arbeit",
+            "Einblicke in Leitungs-, Projekt- oder Beratungsfunktionen",
+            "Praxisbeispiele zu Digitalisierung, Teilhabe und sozialer Innovation"
+          ]
+        },
+        {
+          id: createId(),
+          type: "text",
+          title: "Herzliche Grüße",
+          paragraphs: ["Ihre Fakultät Soziale Arbeit", "Ostfalia Hochschule für angewandte Wissenschaften"],
+          bullets: []
+        }
+      ],
+      sidebarBlocks: [
+        {
+          id: createId(),
+          type: "links",
+          title: "Direkt zu",
+          links: [
+            { id: createId(), label: "Anmeldung zu Veranstaltungen", url: "https://www.ostfalia.de/" },
+            { id: createId(), label: "Fakultät Soziale Arbeit", url: "https://www.ostfalia.de/hochschule/fakultaeten/fakultaet-soziale-arbeit/" },
+            { id: createId(), label: "Kontakt zur Alumni-Kommunikation", url: "mailto:alumni-soziale-arbeit@ostfalia.de" }
+          ]
+        },
+        {
+          id: createId(),
+          type: "info",
+          title: "Warum dieser Newsletter?",
+          text: "Er soll Alumni regelmäßig informieren, die Verbindung zur Fakultät stärken und den Austausch zwischen Studium, Berufspraxis und Hochschule fördern."
+        },
+        {
+          id: createId(),
+          type: "contact",
+          title: "Kontakt Alumni-Kommunikation",
+          lines: [
+            "Fakultät Soziale Arbeit",
+            "Campus Wolfenbüttel",
+            "Telefon: 05331 939-0",
+            "E-Mail: alumni-soziale-arbeit@ostfalia.de",
+            "Erreichbarkeit nach Vereinbarung"
+          ]
+        }
+      ],
+      footer: {
+        title: "Ostfalia Hochschule für angewandte Wissenschaften",
+        lines: ["Fakultät Soziale Arbeit", "Am Exer 6 | 38302 Wolfenbüttel", "www.ostfalia.de"],
+        legal: "Diese E-Mail dient der Information von Alumni der Fakultät Soziale Arbeit. Wenn Sie künftig keine Alumni-Informationen mehr erhalten möchten, ergänzen Sie hier bitte Ihren Abmeldelink oder einen entsprechenden Kontakt."
+      }
+    };
+
+    const state = {
+      data: JSON.parse(JSON.stringify(sampleData)),
+      activeTab: "preview",
+      validationMode: true
+    };
+
+    function escapeHtml(value = "") {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function nlToBreaks(value = "") {
+      return escapeHtml(value).replace(/\n/g, "<br>");
+    }
+
+    function safeUrl(url = "") {
+      const trimmed = String(url || "").trim();
+      return trimmed ? escapeHtml(trimmed) : "#";
+    }
+
+    function hasValue(value) {
+      return String(value || "").trim().length > 0;
+    }
+
+    function joinMeta(event) {
+      return [event.date, event.time, event.location].filter(Boolean).join(" | ");
+    }
+
+    function renderBulletproofButton(label, url) {
+      const safeLabel = escapeHtml(label || "Mehr erfahren");
+      const safeHref = safeUrl(url);
+      return `
+        <!--[if mso]>
+        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="${safeHref}" style="height:40px;v-text-anchor:middle;width:170px;" arcsize="10%" stroke="f" fillcolor="${palette.blue}">
+          <w:anchorlock/>
+          <center style="color:#ffffff;font-family:Arial, sans-serif;font-size:14px;font-weight:bold;">${safeLabel}</center>
+        </v:roundrect>
+        <![endif]-->
+        <!--[if !mso]><!-- -->
+        <a href="${safeHref}" target="_blank" rel="noopener noreferrer" style="background:${palette.blue};border-radius:4px;color:#ffffff;display:inline-block;font-family:Arial, sans-serif;font-size:14px;font-weight:700;line-height:40px;text-align:center;text-decoration:none;padding:0 18px;">${safeLabel}</a>
+        <!--<![endif]-->
+      `;
+    }
+
+    function renderNotice(general) {
+      if (!general.showNotice || !general.noticeText.trim()) return "";
+      return `
+        <tr>
+          <td style="padding:20px 26px 0 26px;background:#ffffff;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid ${palette.yellowBorder};background:${palette.yellow};">
+              <tr>
+                <td style="padding:20px;">
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="background:${palette.yellowLabel};color:${palette.navyDark};font-family:Arial, sans-serif;font-size:12px;font-weight:700;letter-spacing:0.4px;line-height:12px;padding:7px 12px;text-transform:uppercase;">${escapeHtml(general.noticeLabel || "AKTUELL")}</td></tr></table>
+                  <div style="font-family:Arial, sans-serif;font-size:16px;line-height:28px;color:${palette.yellowText};padding-top:14px;">${nlToBreaks(general.noticeText)}</div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      `;
+    }
+
+    function renderLeadPanel(leadPanel) {
+      const paragraphs = leadPanel.paragraphs
+        .filter(Boolean)
+        .map((paragraph, index) => `<p style="margin:${index === 0 ? "0" : "22px 0 0 0"};font-family:Arial, sans-serif;font-size:16px;line-height:32px;color:${palette.text};">${nlToBreaks(paragraph)}</p>`)
+        .join("");
+      return `
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:22px;border:1px solid ${palette.border};background:#ffffff;">
+          <tr><td style="padding:0;"><div style="height:4px;background:${palette.blue};font-size:0;line-height:0;">&nbsp;</div></td></tr>
+          <tr><td style="padding:22px 22px 18px 22px;"><div style="font-family:Arial, sans-serif;font-size:28px;line-height:42px;font-weight:700;color:${palette.navy};margin:0 0 18px 0;">${nlToBreaks(leadPanel.title)}</div>${paragraphs}</td></tr>
+        </table>
+      `;
+    }
+
+    function renderEventsSection(section) {
+      const cards = section.events.map((event) => `
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:18px;border:1px solid ${palette.border};background:#ffffff;">
+          <tr>
+            <td style="padding:18px 18px 16px 18px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="background:${palette.bluePale};color:${palette.navy};font-family:Arial, sans-serif;font-size:11px;font-weight:700;letter-spacing:0.3px;line-height:11px;padding:7px 10px;text-transform:uppercase;">${escapeHtml(event.category)}</td></tr></table>
+              <div style="padding-top:14px;font-family:Arial, sans-serif;font-size:14px;font-weight:700;line-height:22px;color:#516f95;">${escapeHtml(joinMeta(event))}</div>
+              <div style="padding-top:8px;font-family:Arial, sans-serif;font-size:22px;line-height:32px;font-weight:700;color:${palette.navy};">${nlToBreaks(event.title)}</div>
+              <div style="padding-top:10px;padding-bottom:16px;font-family:Arial, sans-serif;font-size:16px;line-height:29px;color:${palette.text};">${nlToBreaks(event.text)}</div>
+              ${renderBulletproofButton(event.buttonLabel, event.buttonUrl)}
+            </td>
+          </tr>
+        </table>
+      `).join("");
+      return `
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:22px;border:1px solid ${palette.border};background:#ffffff;">
+          <tr><td style="padding:0;"><div style="height:4px;background:${palette.blue};font-size:0;line-height:0;">&nbsp;</div></td></tr>
+          <tr><td style="padding:22px 16px 4px 16px;"><div style="font-family:Arial, sans-serif;font-size:28px;line-height:38px;font-weight:700;color:${palette.navy};padding:0 6px 18px 6px;">${escapeHtml(section.title)}</div>${cards}</td></tr>
+        </table>
+      `;
+    }
+
+    function renderTextSection(section) {
+      const paragraphs = (section.paragraphs || []).filter(Boolean).map((paragraph, index) => `<p style="margin:${index === 0 ? "0" : "18px 0 0 0"};font-family:Arial, sans-serif;font-size:16px;line-height:30px;color:${palette.text};">${nlToBreaks(paragraph)}</p>`).join("");
+      const bullets = (section.bullets || []).filter(Boolean).length
+        ? `<ul style="margin:18px 0 0 0;padding-left:22px;color:${palette.text};font-family:Arial, sans-serif;font-size:16px;line-height:30px;">${section.bullets.filter(Boolean).map((bullet) => `<li style="margin-bottom:4px;">${nlToBreaks(bullet)}</li>`).join("")}</ul>`
+        : "";
+      return `
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:22px;border:1px solid ${palette.border};background:#ffffff;">
+          <tr><td style="padding:0;"><div style="height:4px;background:${palette.blue};font-size:0;line-height:0;">&nbsp;</div></td></tr>
+          <tr><td style="padding:22px;"><div style="font-family:Arial, sans-serif;font-size:28px;line-height:38px;font-weight:700;color:${palette.navy};margin:0 0 16px 0;">${escapeHtml(section.title)}</div>${paragraphs}${bullets}</td></tr>
+        </table>
+      `;
+    }
+
+    function renderSidebarBlock(block) {
+      if (block.type === "links") {
+        const links = (block.links || [])
+          .filter((item) => item.label)
+          .map((item, index) => `<tr><td style="padding:${index === 0 ? "0 0 12px 0" : "12px 0"};border-top:${index === 0 ? "0" : `1px solid ${palette.border}`};font-family:Arial, sans-serif;font-size:14px;line-height:24px;font-weight:700;"><a href="${safeUrl(item.url)}" target="_blank" rel="noopener noreferrer" style="color:${palette.navy};text-decoration:underline;">${escapeHtml(item.label)}</a></td></tr>`)
+          .join("");
+        return `
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;border:1px solid ${palette.border};background:${palette.bluePale};">
+            <tr><td style="padding:20px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="background:${palette.blue};color:#ffffff;font-family:Arial, sans-serif;font-size:12px;font-weight:700;letter-spacing:0.4px;line-height:12px;padding:7px 12px;text-transform:uppercase;">${escapeHtml(block.title)}</td></tr></table><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="padding-top:14px;">${links}</table></td></tr>
+          </table>
+        `;
+      }
+
+      if (block.type === "contact") {
+        const lines = (block.lines || []).filter(Boolean);
+        return `
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;border:1px solid ${palette.border};background:#ffffff;">
+            <tr><td style="padding:0;"><div style="height:4px;background:${palette.blue};font-size:0;line-height:0;">&nbsp;</div></td></tr>
+            <tr><td style="padding:20px;"><div style="font-family:Arial, sans-serif;font-size:18px;line-height:30px;font-weight:700;color:${palette.navy};margin:0 0 12px 0;">${escapeHtml(block.title)}</div>${lines.map((line, index) => `<div style="font-family:Arial, sans-serif;font-size:${index === 0 ? "16px" : "14px"};line-height:${index === 0 ? "28px" : "25px"};font-weight:${index === 0 ? "700" : "400"};color:${palette.text};">${nlToBreaks(line)}</div>`).join("")}</td></tr>
+          </table>
+        `;
+      }
+
+      return `
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;border:1px solid ${palette.border};background:#ffffff;">
+          <tr><td style="padding:0;"><div style="height:4px;background:${palette.blue};font-size:0;line-height:0;">&nbsp;</div></td></tr>
+          <tr><td style="padding:20px;"><div style="font-family:Arial, sans-serif;font-size:18px;line-height:30px;font-weight:700;color:${palette.navy};margin:0 0 12px 0;">${escapeHtml(block.title)}</div><div style="font-family:Arial, sans-serif;font-size:14px;line-height:28px;color:${palette.text};">${nlToBreaks(block.text || "")}</div></td></tr>
+        </table>
+      `;
+    }
+
+    function generateNewsletterHtml(data) {
+      const leftSections = data.leftSections.map((section) => section.type === "events" ? renderEventsSection(section) : renderTextSection(section)).join("");
+      const sidebar = data.sidebarBlocks.map(renderSidebarBlock).join("");
+      const footerLines = (data.footer.lines || []).filter(Boolean).map((line) => `${nlToBreaks(line)}<br>`).join("").replace(/<br>$/, "");
+
+      return `<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>${escapeHtml(data.general.headline)}</title>
+</head>
+<body style="margin:0;padding:0;background-color:${palette.page};">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${palette.page};margin:0;padding:0;">
+    <tr>
+      <td align="center" style="padding:22px 12px;">
+        <table role="presentation" width="980" cellpadding="0" cellspacing="0" border="0" style="width:980px;max-width:980px;background:#ffffff;">
+          <tr>
+            <td style="background:${palette.navy};padding:34px 42px 36px 42px;">
+              <div style="font-family:Arial, sans-serif;font-size:12px;line-height:18px;letter-spacing:0.5px;text-transform:uppercase;color:#d9e9fb;padding-bottom:10px;">${escapeHtml(data.general.preheader)}</div>
+              <div style="font-family:Arial, sans-serif;font-size:34px;line-height:48px;font-weight:700;color:#ffffff;max-width:760px;">${nlToBreaks(data.general.headline)}</div>
+              <div style="font-family:Arial, sans-serif;font-size:18px;line-height:38px;color:#ffffff;padding-top:18px;max-width:780px;">${nlToBreaks(data.general.intro)}</div>
+            </td>
+          </tr>
+          ${renderNotice(data.general)}
+          <tr>
+            <td style="padding:22px 26px 28px 26px;background:#ffffff;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td valign="top" width="63%" style="width:63%;padding-right:14px;">
+                    ${renderLeadPanel(data.leadPanel)}
+                    ${leftSections}
+                  </td>
+                  <td valign="top" width="37%" style="width:37%;padding-left:14px;background:${palette.page};">
+                    ${sidebar}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:${palette.navy};padding:24px 30px;">
+              <div style="font-family:Arial, sans-serif;font-size:18px;line-height:28px;font-weight:700;color:#ffffff;">${escapeHtml(data.footer.title)}</div>
+              <div style="font-family:Arial, sans-serif;font-size:13px;line-height:22px;color:#d6e7fb;padding-top:6px;">${footerLines}</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#f1f6fb;padding:18px 30px 24px 30px;font-family:Arial, sans-serif;font-size:11px;line-height:18px;color:#57759b;">${nlToBreaks(data.footer.legal)}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+    }
+
+    function validateNewsletterData(data) {
+      const errors = [];
+      const warnings = [];
+      const push = (bucket, message) => bucket.push({ id: createId(), message });
+
+      if (!hasValue(data.general.preheader)) push(errors, "Der Preheader im Kopfbereich fehlt.");
+      if (!hasValue(data.general.headline)) push(errors, "Die Hauptüberschrift fehlt.");
+      if (!hasValue(data.general.intro)) push(errors, "Der Einleitungstext im Header fehlt.");
+
+      if (data.general.showNotice) {
+        if (!hasValue(data.general.noticeLabel)) push(errors, "Das Label im Bereich „Aktuell“ fehlt.");
+        if (!hasValue(data.general.noticeText)) push(errors, "Der Text im Bereich „Aktuell“ fehlt.");
+        if ((data.general.noticeText || "").length > 260) push(warnings, "Der Text im Bereich „Aktuell“ ist recht lang und kann sehr dominant wirken.");
+      }
+
+      if (!hasValue(data.leadPanel.title)) push(errors, "Die Überschrift des Begrüßungsblocks fehlt.");
+      if (!(data.leadPanel.paragraphs || []).some((item) => hasValue(item))) push(errors, "Im Begrüßungsblock fehlt mindestens ein Absatz.");
+
+      if (!Array.isArray(data.leftSections) || data.leftSections.length === 0) push(errors, "Die linke Spalte enthält noch keine Inhaltsblöcke.");
+
+      (data.leftSections || []).forEach((section, sectionIndex) => {
+        if (!hasValue(section.title)) push(errors, `Block ${sectionIndex + 1} in der linken Spalte hat keine Überschrift.`);
+        if (section.type === "events") {
+          if (!Array.isArray(section.events) || section.events.length === 0) push(errors, `Die Terminsektion „${section.title || `Block ${sectionIndex + 1}`}“ enthält keinen Beitrag.`);
+          (section.events || []).forEach((event, eventIndex) => {
+            if (!hasValue(event.category)) push(errors, `Beitrag ${eventIndex + 1} in „${section.title || `Block ${sectionIndex + 1}`}“ hat keine Eventkategorie.`);
+            if (!hasValue(event.date)) push(errors, `Beitrag ${eventIndex + 1} in „${section.title || `Block ${sectionIndex + 1}`}“ hat kein Datum.`);
+            if (!hasValue(event.time)) push(errors, `Beitrag ${eventIndex + 1} in „${section.title || `Block ${sectionIndex + 1}`}“ hat keine Uhrzeit.`);
+            if (!hasValue(event.location)) push(errors, `Beitrag ${eventIndex + 1} in „${section.title || `Block ${sectionIndex + 1}`}“ hat keinen Ort.`);
+            if (!hasValue(event.title)) push(errors, `Beitrag ${eventIndex + 1} in „${section.title || `Block ${sectionIndex + 1}`}“ hat keinen Titel.`);
+            if (!hasValue(event.text)) push(errors, `Beitrag ${eventIndex + 1} in „${section.title || `Block ${sectionIndex + 1}`}“ hat keinen Beschreibungstext.`);
+            if (!hasValue(event.buttonLabel)) push(errors, `Beitrag ${eventIndex + 1} in „${section.title || `Block ${sectionIndex + 1}`}“ hat keine Button-Beschriftung.`);
+            if (!hasValue(event.buttonUrl)) push(errors, `Beitrag ${eventIndex + 1} in „${section.title || `Block ${sectionIndex + 1}`}“ hat keinen Button-Link.`);
+            if ((event.title || "").length > 90) push(warnings, `Der Titel von Beitrag ${eventIndex + 1} ist recht lang und kann in Outlook umbrechen.`);
+            if ((event.text || "").length > 320) push(warnings, `Der Beschreibungstext von Beitrag ${eventIndex + 1} ist recht lang und kann die Karte stark strecken.`);
+          });
+        }
+        if (section.type === "text") {
+          if (!(section.paragraphs || []).some((item) => hasValue(item))) push(errors, `Der Textblock „${section.title || `Block ${sectionIndex + 1}`}“ enthält keinen Absatz.`);
+          if ((section.paragraphs || []).filter((item) => hasValue(item)).length > 4) push(warnings, `Der Textblock „${section.title || `Block ${sectionIndex + 1}`}“ ist recht lang.`);
+        }
+      });
+
+      if (!Array.isArray(data.sidebarBlocks) || data.sidebarBlocks.length === 0) push(errors, "Die rechte Spalte enthält noch keine Boxen.");
+
+      (data.sidebarBlocks || []).forEach((block, blockIndex) => {
+        if (!hasValue(block.title)) push(errors, `Box ${blockIndex + 1} in der rechten Spalte hat keine Überschrift.`);
+        if (block.type === "links") {
+          const validLinks = (block.links || []).filter((item) => hasValue(item.label) || hasValue(item.url));
+          if (validLinks.length === 0) push(errors, `Die Linkbox „${block.title || `Box ${blockIndex + 1}`}“ enthält keine Links.`);
+          validLinks.forEach((link, linkIndex) => {
+            if (!hasValue(link.label)) push(errors, `Link ${linkIndex + 1} in „${block.title || `Box ${blockIndex + 1}`}“ hat keinen Linktext.`);
+            if (!hasValue(link.url)) push(errors, `Link ${linkIndex + 1} in „${block.title || `Box ${blockIndex + 1}`}“ hat keine URL.`);
+          });
+        }
+        if (block.type === "info" && !hasValue(block.text)) push(errors, `Die Infobox „${block.title || `Box ${blockIndex + 1}`}“ enthält keinen Text.`);
+        if (block.type === "contact" && !(block.lines || []).some((item) => hasValue(item))) push(errors, `Die Kontaktbox „${block.title || `Box ${blockIndex + 1}`}“ enthält keine Zeilen.`);
+      });
+
+      if (!hasValue(data.footer.title)) push(errors, "Der Footer-Titel fehlt.");
+      if (!(data.footer.lines || []).some((item) => hasValue(item))) push(errors, "Im Footer fehlt mindestens eine Zeile mit Absenderinformationen.");
+      if (!hasValue(data.footer.legal)) push(errors, "Der Rechtstext im Footer fehlt.");
+      if ((data.footer.legal || "").length > 420) push(warnings, "Der Rechtstext ist recht lang und kann die Mail unnötig strecken.");
+      if ((data.sidebarBlocks || []).length > 5) push(warnings, "Die rechte Spalte enthält viele Boxen. Prüfe, ob der Newsletter dadurch zu lang wird.");
+
+      return { errors, warnings, isValid: errors.length === 0 };
+    }
+
+    function deepClone(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function downloadFile(content, filename, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function updateSectionTitle(index, value) {
+      state.data.leftSections[index].title = value;
+      renderApp();
+    }
+
+    function renderField(label, html, hint) {
+      return `<div class="field"><label>${label}</label>${html}${hint ? `<div class="hint">${hint}</div>` : ""}</div>`;
+    }
+
+    function renderLeftSectionEditor(section, index) {
+      const typeSwitcher = `
+        <label class="field" style="max-width:190px;">
+          <span>Typ</span>
+          <select class="select" data-action="change-left-type" data-index="${index}">
+            <option value="events" ${section.type === "events" ? "selected" : ""}>Termine</option>
+            <option value="text" ${section.type === "text" ? "selected" : ""}>Text</option>
+          </select>
+        </label>
+      `;
+
+      const header = `
+        <div class="soft-box-header">
+          <div>
+            <div class="soft-box-title">Block ${index + 1}</div>
+            <div class="hint">${section.type === "events" ? "Terminsektion" : "Textblock"}</div>
+          </div>
+          <div class="btn-row">${typeSwitcher}<button class="btn danger small" data-action="remove-left-section" data-index="${index}">Entfernen</button></div>
+        </div>
+      `;
+
+      const titleField = renderField(
+        "Sektionsüberschrift",
+        `<input class="input" value="${escapeHtml(section.title || "")}" data-action="set-left-title" data-index="${index}">`,
+        "Pflichtfeld"
+      );
+
+      if (section.type === "events") {
+        const events = section.events.map((event, eventIndex) => `
+          <div class="soft-box">
+            <div class="soft-box-header">
+              <div class="soft-box-title">Beitrag / Termin ${eventIndex + 1}</div>
+              <button class="btn danger small" data-action="remove-event" data-section-index="${index}" data-event-index="${eventIndex}">Entfernen</button>
+            </div>
+            <div class="field-grid">
+              ${renderField("Eventkategorie", `<input class="input" value="${escapeHtml(event.category || "")}" data-action="set-event-field" data-section-index="${index}" data-event-index="${eventIndex}" data-field="category">`, "Pflichtfeld")}
+              ${renderField("Titel", `<input class="input" value="${escapeHtml(event.title || "")}" data-action="set-event-field" data-section-index="${index}" data-event-index="${eventIndex}" data-field="title">`, "Pflichtfeld")}
+              ${renderField("Datum", `<input class="input" value="${escapeHtml(event.date || "")}" data-action="set-event-field" data-section-index="${index}" data-event-index="${eventIndex}" data-field="date">`, "Pflichtfeld")}
+              ${renderField("Uhrzeit", `<input class="input" value="${escapeHtml(event.time || "")}" data-action="set-event-field" data-section-index="${index}" data-event-index="${eventIndex}" data-field="time">`, "Pflichtfeld")}
+              ${renderField("Ort", `<input class="input" value="${escapeHtml(event.location || "")}" data-action="set-event-field" data-section-index="${index}" data-event-index="${eventIndex}" data-field="location">`, "Pflichtfeld")}
+              ${renderField("Button-Beschriftung", `<input class="input" value="${escapeHtml(event.buttonLabel || "")}" data-action="set-event-field" data-section-index="${index}" data-event-index="${eventIndex}" data-field="buttonLabel">`, "Pflichtfeld")}
+            </div>
+            <div class="field-grid one">
+              ${renderField("Button-Link", `<input class="input" value="${escapeHtml(event.buttonUrl || "")}" data-action="set-event-field" data-section-index="${index}" data-event-index="${eventIndex}" data-field="buttonUrl">`, "Pflichtfeld")}
+              ${renderField("Kurztext", `<textarea class="textarea" rows="4" data-action="set-event-field" data-section-index="${index}" data-event-index="${eventIndex}" data-field="text">${escapeHtml(event.text || "")}</textarea>`, "Pflichtfeld")}
+            </div>
+          </div>
+        `).join("");
+
+        return `<div class="soft-box">${header}${titleField}${events}<button class="btn secondary small" data-action="add-event" data-index="${index}">Beitrag hinzufügen</button></div>`;
+      }
+
+      const paragraphsValue = (section.paragraphs || []).join("\n\n");
+      const bulletsValue = (section.bullets || []).join("\n");
+      return `
+        <div class="soft-box">
+          ${header}
+          ${titleField}
+          ${renderField("Absätze", `<textarea class="textarea" rows="7" data-action="set-text-paragraphs" data-index="${index}">${escapeHtml(paragraphsValue)}</textarea>`, "Mindestens ein Absatz erforderlich. Absätze bitte durch eine Leerzeile trennen.")}
+          ${renderField("Aufzählung", `<textarea class="textarea" rows="4" data-action="set-text-bullets" data-index="${index}">${escapeHtml(bulletsValue)}</textarea>`, "Optional. Eine Zeile pro Aufzählungspunkt.")}
+        </div>
+      `;
+    }
+
+    function renderSidebarBlockEditor(block, index) {
+      const typeSelect = `
+        <label class="field" style="max-width:190px;">
+          <span>Typ</span>
+          <select class="select" data-action="change-sidebar-type" data-index="${index}">
+            <option value="links" ${block.type === "links" ? "selected" : ""}>Linkbox</option>
+            <option value="info" ${block.type === "info" ? "selected" : ""}>Infobox</option>
+            <option value="contact" ${block.type === "contact" ? "selected" : ""}>Kontaktbox</option>
+          </select>
+        </label>
+      `;
+
+      let detail = "";
+      if (block.type === "links") {
+        detail = `
+          <div class="stack">
+            ${(block.links || []).map((link, linkIndex) => `
+              <div class="soft-box">
+                <div class="soft-box-header">
+                  <div class="soft-box-title">Link ${linkIndex + 1}</div>
+                  <button class="btn danger small" data-action="remove-link" data-block-index="${index}" data-link-index="${linkIndex}">Entfernen</button>
+                </div>
+                <div class="field-grid">
+                  ${renderField("Linktext", `<input class="input" value="${escapeHtml(link.label || "")}" data-action="set-link-field" data-block-index="${index}" data-link-index="${linkIndex}" data-field="label">`, "Pflichtfeld")}
+                  ${renderField("URL", `<input class="input" value="${escapeHtml(link.url || "")}" data-action="set-link-field" data-block-index="${index}" data-link-index="${linkIndex}" data-field="url">`, "Pflichtfeld")}
+                </div>
+              </div>
+            `).join("")}
+            <button class="btn secondary small" data-action="add-link" data-index="${index}">Link hinzufügen</button>
+          </div>
+        `;
+      } else if (block.type === "contact") {
+        detail = renderField("Zeileninhalt", `<textarea class="textarea" rows="6" data-action="set-contact-lines" data-index="${index}">${escapeHtml((block.lines || []).join("\n"))}</textarea>`, "Mindestens eine Zeile erforderlich. Eine Zeile pro Information.");
+      } else {
+        detail = renderField("Text", `<textarea class="textarea" rows="5" data-action="set-sidebar-text" data-index="${index}">${escapeHtml(block.text || "")}</textarea>`, "Pflichtfeld");
+      }
+
+      return `
+        <div class="soft-box">
+          <div class="soft-box-header">
+            <div>
+              <div class="soft-box-title">Box ${index + 1}</div>
+              <div class="hint">Rechte Spalte</div>
+            </div>
+            <div class="btn-row">${typeSelect}<button class="btn danger small" data-action="remove-sidebar" data-index="${index}">Entfernen</button></div>
+          </div>
+          ${renderField("Überschrift", `<input class="input" value="${escapeHtml(block.title || "")}" data-action="set-sidebar-title" data-index="${index}">`, "Pflichtfeld")}
+          ${detail}
+        </div>
+      `;
+    }
+
+    function renderValidationPanel(validation) {
+      return `
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Pflichtfelder und Validierung</h2>
+              <p>Prüft vor dem Export, ob Pflichtangaben fehlen oder Texte in Outlook schnell unruhig wirken.</p>
+            </div>
+            <button class="switch ${state.validationMode ? "on" : ""}" data-action="toggle-validation" aria-label="Validierungsmodus umschalten"></button>
+          </div>
+          <div class="panel-body">
+            <div class="status-grid">
+              <div class="status-card status-neutral"><small>Modus</small><strong>${state.validationMode ? "An" : "Aus"}</strong><p>Bei aktivem Modus wird der HTML-Export blockiert, solange Fehler vorhanden sind.</p></div>
+              <div class="status-card status-danger"><small>Fehler</small><strong>${validation.errors.length}</strong><p>Fehlende Pflichtfelder oder unvollständige Blöcke.</p></div>
+              <div class="status-card status-warn"><small>Hinweise</small><strong>${validation.warnings.length}</strong><p>Darstellungshinweise, z. B. sehr lange Titel oder Texte.</p></div>
+            </div>
+            ${validation.errors.length ? `<div class="alert error"><strong>Fehlende Pflichtangaben</strong><ul>${validation.errors.map((item) => `<li>${escapeHtml(item.message)}</li>`).join("")}</ul></div>` : `<div class="alert ok"><strong>Alles vollständig</strong>Alle Pflichtfelder sind gefüllt. Der Newsletter kann exportiert werden.</div>`}
+            ${validation.warnings.length ? `<div class="alert warn"><strong>Hinweise zur Darstellungsqualität</strong><ul>${validation.warnings.map((item) => `<li>${escapeHtml(item.message)}</li>`).join("")}</ul></div>` : ""}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderApp() {
+      const validation = validateNewsletterData(state.data);
+      const canExport = !state.validationMode || validation.isValid;
+      const htmlOutput = generateNewsletterHtml(state.data);
+
+      const app = document.getElementById("app");
+      app.innerHTML = `
+        <section class="hero">
+          <div class="hero-top">
+            <div>
+              <div class="eyebrow">Newsletter Generator</div>
+              <h1>GitHub-Pages-fertige Newsletter-App ohne Build-Schritt</h1>
+              <p>Diese Version läuft als reine statische Datei. Du kannst sie direkt als <strong>index.html</strong> in ein GitHub-Repository legen und über GitHub Pages veröffentlichen.</p>
+            </div>
+            <div class="btn-row">
+              <button class="btn secondary" data-action="load-sample">Beispieldaten laden</button>
+              <button class="btn secondary" data-action="export-json">JSON exportieren</button>
+              <button class="btn secondary" data-action="import-json">JSON importieren</button>
+              <input type="file" id="json-import" accept="application/json" hidden>
+            </div>
+          </div>
+        </section>
+
+        ${renderValidationPanel(validation)}
+
+        <div class="layout" style="margin-top:20px;">
+          <div class="stack">
+            <section class="panel">
+              <div class="panel-head"><div><h3>Allgemein</h3><p>Header, Einleitung und optionaler Hinweisbereich.</p></div></div>
+              <div class="panel-body">
+                ${renderField("Preheader", `<textarea class="textarea" rows="2" data-action="set-general" data-field="preheader">${escapeHtml(state.data.general.preheader)}</textarea>`, "Pflichtfeld")}
+                ${renderField("Hauptüberschrift", `<textarea class="textarea" rows="3" data-action="set-general" data-field="headline">${escapeHtml(state.data.general.headline)}</textarea>`, "Pflichtfeld")}
+                ${renderField("Einleitungstext", `<textarea class="textarea" rows="4" data-action="set-general" data-field="intro">${escapeHtml(state.data.general.intro)}</textarea>`, "Pflichtfeld")}
+                <div class="toggle-row"><div class="toggle-label"><strong>Bereich „Aktuell“ anzeigen</strong><span>Optionaler gelber Hinweisblock oberhalb der Spalten.</span></div><button class="switch ${state.data.general.showNotice ? "on" : ""}" data-action="toggle-notice"></button></div>
+                ${state.data.general.showNotice ? `${renderField("Label", `<input class="input" value="${escapeHtml(state.data.general.noticeLabel)}" data-action="set-general" data-field="noticeLabel">`, "Pflichtfeld")}${renderField("Hinweistext", `<textarea class="textarea" rows="4" data-action="set-general" data-field="noticeText">${escapeHtml(state.data.general.noticeText)}</textarea>`, "Pflichtfeld")}` : ""}
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head"><div><h3>Begrüßungsblock links</h3><p>Erster großer Inhaltblock in der linken Spalte.</p></div></div>
+              <div class="panel-body">
+                ${renderField("Überschrift", `<textarea class="textarea" rows="3" data-action="set-lead-title">${escapeHtml(state.data.leadPanel.title)}</textarea>`, "Pflichtfeld")}
+                ${renderField("Absätze", `<textarea class="textarea" rows="8" data-action="set-lead-paragraphs">${escapeHtml(state.data.leadPanel.paragraphs.join("\n\n"))}</textarea>`, "Mindestens ein Absatz erforderlich. Absätze bitte durch eine Leerzeile trennen.")}
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <div><h3>Linke Spalte</h3><p>Terminsektionen und freie Textblöcke.</p></div>
+                <div class="btn-row">
+                  <button class="btn secondary small" data-action="add-left-events">Terminsektion</button>
+                  <button class="btn secondary small" data-action="add-left-text">Textblock</button>
+                </div>
+              </div>
+              <div class="panel-body">${state.data.leftSections.map(renderLeftSectionEditor).join("")}</div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <div><h3>Rechte Spalte</h3><p>Linkboxen, Infoboxen und Kontaktblöcke.</p></div>
+                <div class="btn-row"><button class="btn secondary small" data-action="add-sidebar">Box hinzufügen</button></div>
+              </div>
+              <div class="panel-body">${state.data.sidebarBlocks.map(renderSidebarBlockEditor).join("")}</div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head"><div><h3>Footer</h3><p>Absender- und Rechtstext.</p></div></div>
+              <div class="panel-body">
+                ${renderField("Footer-Titel", `<input class="input" value="${escapeHtml(state.data.footer.title)}" data-action="set-footer" data-field="title">`, "Pflichtfeld")}
+                ${renderField("Footer-Zeilen", `<textarea class="textarea" rows="4" data-action="set-footer-lines">${escapeHtml(state.data.footer.lines.join("\n"))}</textarea>`, "Mindestens eine Zeile erforderlich. Eine Zeile pro Information.")}
+                ${renderField("Rechtstext", `<textarea class="textarea" rows="5" data-action="set-footer" data-field="legal">${escapeHtml(state.data.footer.legal)}</textarea>`, "Pflichtfeld")}
+              </div>
+            </section>
+          </div>
+
+          <div class="stack">
+            <section class="panel">
+              <div class="panel-head">
+                <div class="preview-toolbar" style="width:100%;">
+                  <div class="tabs">
+                    <button class="tab ${state.activeTab === "preview" ? "active" : ""}" data-action="tab-preview">Vorschau</button>
+                    <button class="tab ${state.activeTab === "html" ? "active" : ""}" data-action="tab-html">HTML</button>
+                  </div>
+                  <div class="btn-row">
+                    <button class="btn secondary" ${canExport ? "" : "disabled"} data-action="copy-html">HTML kopieren</button>
+                    <button class="btn" ${canExport ? "" : "disabled"} data-action="download-html">HTML herunterladen</button>
+                  </div>
+                </div>
+              </div>
+              <div class="panel-body">
+                ${canExport ? "" : `<div class="alert warn"><strong>Export gesperrt</strong>Der Validierungsmodus ist aktiv. Bitte behebe zuerst die Pflichtfeld-Fehler.</div>`}
+                ${state.activeTab === "preview" ? `<div class="preview-wrap"><iframe srcdoc="${escapeHtml(htmlOutput)}"></iframe></div>` : `<textarea class="code-box" readonly>${escapeHtml(htmlOutput)}</textarea>`}
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head"><div><h3>So wird die App genutzt</h3><p>Empfohlen für Kolleginnen, Kollegen, Fachschaftsräte und studentische Gremien.</p></div></div>
+              <div class="panel-body">
+                <div class="info-grid">
+                  <div class="info-card"><strong>1. Inhalte pflegen</strong><p>Texte, Termine und Seitenleisten nur über Formulare ausfüllen. Technisches HTML bleibt verborgen.</p></div>
+                  <div class="info-card"><strong>2. Validierung prüfen</strong><p>Pflichtfelder, fehlende Links und auffällig lange Texte werden vor dem Export sichtbar gemacht.</p></div>
+                  <div class="info-card"><strong>3. HTML exportieren</strong><p>Den fertigen Code herunterladen oder kopieren und anschließend im Versandtool einsetzen.</p></div>
+                </div>
+                <div class="repo-box"><strong>GitHub-Pages-ready</strong>Kein React-Build, kein Node, kein Workflow erforderlich. Für die Veröffentlichung genügt eine einzige Datei namens <code>index.html</code>.</div>
+              </div>
+            </section>
+          </div>
+        </div>
+      `;
+
+      bindEvents();
+      document.getElementById("json-import").addEventListener("change", handleJsonImport);
+    }
+
+    function bindEvents() {
+      document.querySelectorAll("[data-action]").forEach((el) => {
+        const tag = el.tagName.toLowerCase();
+        const eventName = tag === "input" || tag === "textarea" || tag === "select" ? "input" : "click";
+        el.addEventListener(eventName, handleAction);
+        if (tag === "select") {
+          el.addEventListener("change", handleAction);
+        }
+      });
+    }
+
+    function splitParagraphs(value) {
+      return String(value || "").split(/\n\s*\n/).map((item) => item.trim()).filter(Boolean);
+    }
+
+    function splitLines(value) {
+      return String(value || "").split("\n").map((item) => item.trim()).filter(Boolean);
+    }
+
+    function handleAction(event) {
+      const el = event.currentTarget;
+      const action = el.dataset.action;
+      const value = "value" in el ? el.value : "";
+
+      switch (action) {
+        case "toggle-validation":
+          state.validationMode = !state.validationMode;
+          break;
+        case "load-sample":
+          state.data = deepClone(sampleData);
+          break;
+        case "toggle-notice":
+          state.data.general.showNotice = !state.data.general.showNotice;
+          break;
+        case "set-general":
+          state.data.general[el.dataset.field] = value;
+          break;
+        case "set-lead-title":
+          state.data.leadPanel.title = value;
+          break;
+        case "set-lead-paragraphs":
+          state.data.leadPanel.paragraphs = splitParagraphs(value);
+          break;
+        case "add-left-events":
+          state.data.leftSections.push({
+            id: createId(),
+            type: "events",
+            title: "Neue Terminsektion",
+            events: [{ id: createId(), category: "EVENT", date: "", time: "", location: "", title: "", text: "", buttonLabel: "Mehr erfahren", buttonUrl: "" }]
+          });
+          break;
+        case "add-left-text":
+          state.data.leftSections.push({ id: createId(), type: "text", title: "Neuer Textblock", paragraphs: [""], bullets: [] });
+          break;
+        case "remove-left-section":
+          state.data.leftSections.splice(Number(el.dataset.index), 1);
+          break;
+        case "set-left-title":
+          state.data.leftSections[Number(el.dataset.index)].title = value;
+          break;
+        case "change-left-type": {
+          const index = Number(el.dataset.index);
+          const section = state.data.leftSections[index];
+          state.data.leftSections[index] = el.value === "events"
+            ? { id: section.id, type: "events", title: section.title || "Kommende Termine", events: [{ id: createId(), category: "EVENT", date: "", time: "", location: "", title: "", text: "", buttonLabel: "Mehr erfahren", buttonUrl: "" }] }
+            : { id: section.id, type: "text", title: section.title || "Neuer Textblock", paragraphs: [""], bullets: [] };
+          break;
+        }
+        case "add-event":
+          state.data.leftSections[Number(el.dataset.index)].events.push({ id: createId(), category: "EVENT", date: "", time: "", location: "", title: "", text: "", buttonLabel: "Mehr erfahren", buttonUrl: "" });
+          break;
+        case "remove-event":
+          state.data.leftSections[Number(el.dataset.sectionIndex)].events.splice(Number(el.dataset.eventIndex), 1);
+          break;
+        case "set-event-field":
+          state.data.leftSections[Number(el.dataset.sectionIndex)].events[Number(el.dataset.eventIndex)][el.dataset.field] = value;
+          break;
+        case "set-text-paragraphs":
+          state.data.leftSections[Number(el.dataset.index)].paragraphs = splitParagraphs(value);
+          break;
+        case "set-text-bullets":
+          state.data.leftSections[Number(el.dataset.index)].bullets = splitLines(value);
+          break;
+        case "add-sidebar":
+          state.data.sidebarBlocks.push({ id: createId(), type: "info", title: "Neue Infobox", text: "" });
+          break;
+        case "remove-sidebar":
+          state.data.sidebarBlocks.splice(Number(el.dataset.index), 1);
+          break;
+        case "change-sidebar-type": {
+          const index = Number(el.dataset.index);
+          const block = state.data.sidebarBlocks[index];
+          state.data.sidebarBlocks[index] = el.value === "links"
+            ? { id: block.id, type: "links", title: block.title || "Direkt zu", links: [{ id: createId(), label: "", url: "" }] }
+            : el.value === "contact"
+            ? { id: block.id, type: "contact", title: block.title || "Kontakt", lines: [""] }
+            : { id: block.id, type: "info", title: block.title || "Neue Infobox", text: "" };
+          break;
+        }
+        case "set-sidebar-title":
+          state.data.sidebarBlocks[Number(el.dataset.index)].title = value;
+          break;
+        case "set-sidebar-text":
+          state.data.sidebarBlocks[Number(el.dataset.index)].text = value;
+          break;
+        case "set-contact-lines":
+          state.data.sidebarBlocks[Number(el.dataset.index)].lines = splitLines(value);
+          break;
+        case "add-link":
+          state.data.sidebarBlocks[Number(el.dataset.index)].links.push({ id: createId(), label: "", url: "" });
+          break;
+        case "remove-link":
+          state.data.sidebarBlocks[Number(el.dataset.blockIndex)].links.splice(Number(el.dataset.linkIndex), 1);
+          break;
+        case "set-link-field":
+          state.data.sidebarBlocks[Number(el.dataset.blockIndex)].links[Number(el.dataset.linkIndex)][el.dataset.field] = value;
+          break;
+        case "set-footer":
+          state.data.footer[el.dataset.field] = value;
+          break;
+        case "set-footer-lines":
+          state.data.footer.lines = splitLines(value);
+          break;
+        case "tab-preview":
+          state.activeTab = "preview";
+          break;
+        case "tab-html":
+          state.activeTab = "html";
+          break;
+        case "copy-html": {
+          const validation = validateNewsletterData(state.data);
+          if (state.validationMode && !validation.isValid) {
+            alert("Der Validierungsmodus ist aktiv. Bitte behebe zuerst die Pflichtfeld-Fehler.");
+            return;
+          }
+          navigator.clipboard.writeText(generateNewsletterHtml(state.data))
+            .then(() => alert("HTML wurde in die Zwischenablage kopiert."))
+            .catch(() => alert("Kopieren war nicht möglich. Bitte den HTML-Code manuell kopieren."));
+          return;
+        }
+        case "download-html": {
+          const validation = validateNewsletterData(state.data);
+          if (state.validationMode && !validation.isValid) {
+            alert("Der Validierungsmodus ist aktiv. Bitte behebe zuerst die Pflichtfeld-Fehler.");
+            return;
+          }
+          downloadFile(generateNewsletterHtml(state.data), "newsletter.html", "text/html;charset=utf-8");
+          return;
+        }
+        case "export-json":
+          downloadFile(JSON.stringify(state.data, null, 2), "newsletter-daten.json", "application/json;charset=utf-8");
+          return;
+        case "import-json":
+          document.getElementById("json-import").click();
+          return;
+        default:
+          return;
+      }
+
+      renderApp();
+    }
+
+    function handleJsonImport(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          state.data = JSON.parse(reader.result);
+          renderApp();
+          alert("JSON-Datei wurde geladen.");
+        } catch (error) {
+          alert("Die JSON-Datei konnte nicht gelesen werden.");
+        } finally {
+          event.target.value = "";
+        }
+      };
+      reader.readAsText(file, "utf-8");
+    }
+
+    renderApp();
+  </script>
+</body>
+</html>
